@@ -40,6 +40,7 @@ Board.prototype.indexFor = function([row, col]) {
     return row * this.width + col
 }
 
+
 /**
  * get(coords: [row: int, col: int]) -> uint8
  * 
@@ -81,10 +82,7 @@ Board.prototype.livingNeighbors = function([row, col]) {
     arr.forEach(neighbor => {
         if (this.get(neighbor)) aliveCount++;
     });
-    // arr.forEach(function(neighbor) {
-    //     //console.log(this === window);
-    //     if (this.get(neighbor).bind(this)) { aliveCount++ };
-    // });
+
     return aliveCount;
 }
 
@@ -125,35 +123,24 @@ function conway(isAlive, numLivingNeighbors) {
  * @param {(Boolean, Int) -> Boolean} rules (default: conway)
  */
 
+
+function getCoords(index) {
+    return [Math.floor(index / this.width), index % this.width];
+}
+
 function tick(present, future, rules = conway) {
     var cells = present.cells;
-
-    if (rules === conway) {
-        future.cells = cells;
+    // future.cells = cells.map(function(cell) {
+    //     console.log(cell, 'cell')
+    //     console.log()
+    //     return rules(cell, );
+    // });
+    var futureCells = [];
+    for (var i = 0; i < cells.length; i++) {
+        var coords = getCoords(i);
+        var numberOfLivingCells = this.livingNeighbors(coords);
+        futureCells.push(rules(cells[i], numberOfLivingCells));
     }
-
-
-
-    if (rules === flip) {
-
-        function flip(val) {
-            if (val === 1) {
-                return 0;
-            } else if (val === 0) {
-                return 1;
-            }
-        }
-
-        var flipped = [];
-
-        for (var i = 0; i < cells.length; i++) {
-            var cell = cells[i];
-
-            flipped.push(flip(cell));
-        }
-
-        future.cells = flipped;
-    }
-
+    future.cells = futureCells;
     return [future, present]
 }
